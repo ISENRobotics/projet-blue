@@ -1,0 +1,8 @@
+<launch>
+ <node name="imu_node.py" pkg="imu" type="imu_node.py" respawn="true" />
+ <node name="gpsd_client" pkg="gpsd_client" type="gpsd_client" respawn="true" />
+ <node name="pwmServo_node" pkg="pwmServo" type="pwmServo" respawn="true" />
+  <node name="regulateur_node" pkg="regulateur" type="regulateur" respawn="true" />
+
+ 
+</launch>
