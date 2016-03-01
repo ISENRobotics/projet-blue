@@ -32,7 +32,7 @@ class Regulateur
 		float process(float a[2], float b[2]);
 		void setPosition(const gps_common::GPSFix& pos);
 		void setTheta(const imu::YPR& data);
-		void setObjectifs(const gps_common::GPSFix& pos);
+		void setObjectifs();
 		void debug();
 		~Regulateur();
 

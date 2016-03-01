@@ -56,9 +56,29 @@ void Regulateur::setTheta(const imu::YPR& data)
   theta = data.Y;
 }
 
-void Regulateur::setObjectifs(const gps_common::GPSFix& pos)
+float Regulateur::setObjectifs()
 {
-  std::cout <<"coucou"  << std::endl;
+  std::string gpsString;
+  float a[2] ;
+
+
+  std::ifstream fichier("/home/ubuntu/objectif.txt", std::ios::in);
+
+  if (fichier)
+  {
+    getline(fichier,gpsString);
+      a[0] = atof( gpsString.c_str() );
+    getline(fichier,gpsString);
+      a[1] = atof( gpsString.c_str() );
+    fichier.close();
+  }
+  else
+  {
+    std::cout << "impossible d ouvrir le fichier"<< std::endl;
+  }
+
+  return a;
+
 }
 
 void Regulateur::debug()

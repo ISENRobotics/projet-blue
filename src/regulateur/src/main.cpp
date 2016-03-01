@@ -25,6 +25,7 @@ int main(int argc, char **argv)
 
   	ros::NodeHandle n;
   	std_msgs::Float64  commande;
+    std_msgs::Float64 commandeMot;
 
   	float a[2],b[2];
   	a[0] = -60;
@@ -34,7 +35,7 @@ int main(int argc, char **argv)
 
   	//Publish
   	ros::Publisher topicDirection = n.advertise<std_msgs::Float64>("commandeDir", 1);
-
+    ros::Publisher topicMoteur = n.advertise<std_msgs::Float64>("commandeMot",1);
   	//Subscribe
   	ros::Subscriber topicGPS = n.subscribe("fix",10,refreshGPSPosition);
   	ros::Subscriber topicIMU = n.subscribe("imu",1,refreshYPR);
@@ -51,8 +52,11 @@ int main(int argc, char **argv)
   	commande.data = regulateur.process(a,b);
   	std::cout << "commande =" << commande.data << std::endl;
 
+    commandeMot.data = 30;
+
     //publie le message
     topicDirection.publish(commande);
+    topicMoteur.publish(commandeMot);
 
 
     //rajouter pour le refresh
