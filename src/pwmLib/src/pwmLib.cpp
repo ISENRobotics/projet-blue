@@ -9,16 +9,19 @@ Servo::Servo()
 
 
 
-Servo::Servo(std::string t_type,std::string t_chip)
+Servo::Servo(std::string t_type)
 {
 	duty = 0;
 	type = t_type;
+	k = 0;
 
 
 	if(type =="direction")
 	{
 		dutyMax = DIR_PWM_MAX;
 		dutyMin = DIR_PWM_MIN;
+		k = DIR_K;
+		zero = DIR_PWM_ZERO;
 
 		chip = getChipEhr();
 		path = "/sys/class/pwm/" + chip   +"/pwm0/duty_cycle";
@@ -28,6 +31,8 @@ Servo::Servo(std::string t_type,std::string t_chip)
 	{
 		dutyMax = MOT_PWM_MAX;
 		dutyMin = MOT_PWM_MIN;
+		k = MOT_K;
+		zero = MOT_PWM_ZERO;
 
 		chip = getChipEhr();
 		path ="/sys/class/" + chip + "/pwm1/duty_cycle";
@@ -60,7 +65,7 @@ void Servo::setDuty(int tmp)
 	}	
 	else
 	{
-		std::cout << "(methode setDuty) impossible d ecrire le duty" << std::endl;
+		std::cout << "(methode setDuty)["<< type <<"] impossible d ecrire le duty" << std::endl;
 	}
 }
 
@@ -110,78 +115,59 @@ std::string Servo::getChipEcap()
 
 
 //COMMANDE PWM /////////////////////////////////////////////////////////////
-void Servo::commande(int input)
+void Servo::commande(const std_msgs::Float64& msg)
 {
-	float buffer;
-	if(type=="direction")
-	{
-		/* Si cest la direction input va de -180 a 180
-		* on genere le pwm pour controler le servo
-		* sans depasser les valeurs min & max */
 
-		if(input < DIR_PWM_MAX && input > DIR_PWM_MIN)
+
+	float input = msg.data;
+	float commandeNs = zero + input* k;
+
+	if(type== "direction" || "moteur" || "selecteur")
+	{
+
+
+		if(commandeNs < dutyMax && commandeNs > dutyMin)
 		{
-			buffer = input * DIR_K;
-			duty = (int)buffer;
+			
+			duty = (int)commandeNs;
 			setDuty(duty);
+			
 
 		}
 		else
 		{
-			std::cout << "(Servo::commande) valeur limites depassees" << std::endl;
+			std::cout << "(Servo::commande)["<< type <<"] valeur limites depassees" << std::endl;
 		}
 	}
 
-	else if(type=="moteur")
-	{
-		/*Si cest le moteur input va de -1 a 1
-		*on genere le pwm pour controler le moteur
-		* -1 : marche arr 100% , 0:arret, 1:marche avant 100%*/
-
-		if(input < MOT_PWM_MAX && input > MOT_PWM_MAX)
-		{
-			buffer = input * MOT_K;
-			duty = (int)buffer;
-			setDuty(duty);
-		}
-
-	}
-
-	else if(type=="selecteur")
-	{
-		/* Si cest le selecteur  input va de 1 a 2
-		* on genere le pwm pour controler la carte
-		* cytron ( 2: manette | 1: beaglebone) 
-		* il faut generer un pwm < 1.5 ms pour que
-		* la BB controle les pwm ou generer un signal = 0
-		* ou > 1.5ms pour que l autre voie prenne le relais
-		*/
-
-		if(input == 1)
-		{
-			setDuty(1800000); //en ns 1800000 = 1.8ms
-		}
-		else if (input == 2)
-		{
-			setDuty(0);
-		}
-		else
-		{
-			std::cout << "(Servo::commande) erreur d input : 1 ou 2" << std::endl;
-		}
 
 
-	}
+
 
 	else
 	{
 		std::cout << "(Servo::commande) : erreur de type !" << std::endl;
 	}
 }
+
+
+void Servo::debug(const std_msgs::Float64& msg)
+{
+	float input = msg.data;
+	float commandeNs = zero + input* k;
+	std::cout << "\n###debug() ---------------"
+			  << "\n. type =" << type
+			  << "\n. dutyMin =" << dutyMin
+			  << "\n. dutyMax =" << dutyMax
+			  << "\n. chip =" << chip
+			  << "\n. path =" << path
+			  << "\n. k =" << k
+			  << "\n. zero =" << zero 
+			  << "\n. commande =" << commandeNs
+			  << "\n--------------- debug()###" << std::endl;
+}
 //DESTRUCTEUR ///////////////////////////////////////////////////////////////////////////
 Servo::~Servo()
 {
 
 }
-
-

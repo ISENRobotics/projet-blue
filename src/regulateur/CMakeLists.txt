@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(pwmLib)
+project(regulateur)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -8,6 +8,8 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
   std_msgs
+  gps_common
+  imu
 )
 
 ## System dependencies are found with CMake's conventions
@@ -101,8 +103,8 @@ find_package(catkin REQUIRED COMPONENTS
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
   INCLUDE_DIRS include
-  #LIBRARIES pwmLib
-  CATKIN_DEPENDS roscpp rospy std_msgs
+  LIBRARIES regulateur
+  CATKIN_DEPENDS roscpp rospy std_msgs   gps_common imu
   DEPENDS system_lib
 )
 
@@ -112,32 +114,33 @@ catkin_package(
 
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
-# include_directories(include)
+ include_directories(include)
 include_directories(
   ${catkin_INCLUDE_DIRS}
 )
 
 ## Declare a C++ library
- add_library(pwmLib
-   ~/catkin_ws/src/${PROJECT_NAME}/src/pwmLib.cpp
+ add_library(regulateur src/regulateur.cpp
  )
+
+
 
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
 ## either from message generation or dynamic reconfigure
-# add_dependencies(pwmLib ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+# add_dependencies(regulateur ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Declare a C++ executable
-# add_executable(pwmLib_node src/pwmLib_node.cpp)
+ add_executable(regulateur_node src/main.cpp)
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
-# add_dependencies(pwmLib_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+ #add_dependencies(regulateur_node ${${PROJECT_NAME}_EXPORTED_TARGETS} #${catkin_EXPORTED_TARGETS} regulateur)
 
 ## Specify libraries to link a library or executable target against
-# target_link_libraries(pwmLib_node
-#   ${catkin_LIBRARIES}
-# )
+ target_link_libraries(regulateur_node
+   ${catkin_LIBRARIES} regulateur
+ )
 
 #############
 ## Install ##
@@ -154,18 +157,18 @@ include_directories(
 # )
 
 ## Mark executables and/or libraries for installation
-install(TARGETS pwmLib 
-  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
- )
+# install(TARGETS regulateur regulateur_node
+#   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+#   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+#   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+# )
 
 ## Mark cpp header files for installation
- install(DIRECTORY include/${PROJECT_NAME}/
-   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
- FILES_MATCHING PATTERN "*.h"
+# install(DIRECTORY include/${PROJECT_NAME}/
+#   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+#   FILES_MATCHING PATTERN "*.h"
 #   PATTERN ".svn" EXCLUDE
-)
+# )
 
 ## Mark other files for installation (e.g. launch and bag files, etc.)
 # install(FILES
@@ -179,7 +182,7 @@ install(TARGETS pwmLib
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_pwmLib.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_regulateur.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()

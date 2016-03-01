@@ -1,16 +1,17 @@
 #include <iostream>
-#include <fstream>
 #include <string>
+#include <fstream>
+#include <std_msgs/Float64.h>
 
+#define DIR_PWM_MAX 1800000
+#define DIR_PWM_MIN 980000
+#define DIR_PWM_ZERO 1380000
+#define DIR_K 1018591.6
 
-//Valeur limites a ne pas depasser par les differents pwm
-#define DIR_PWM_MAX 0
-#define DIR_PWM_MIN 0
-#define DIR_K 0
-
-#define MOT_PWM_MAX 0
-#define MOT_PWM_MIN 0
-#define MOT_K 0
+#define MOT_PWM_MAX 1900000
+#define MOT_PWM_MIN 800000
+#define MOT_PWM_ZERO 1300000
+#define MOT_K 5500
 
 #define SEL_PWM_MAX 14000000
 #define SEL_PWM_MIN 0
@@ -27,19 +28,20 @@ class Servo
 		std::string chip;					//nom du chip instancie (pwmchip0/pwmchip1)
 		std::string path;					//chemin absolu du pwm
 		std::string type;
+		float k; 							//coefficient 
+		int zero;
 		
- 
-
-
+		
 	public:
 		Servo();							//Constructeur
 		//type = 'direction' ,'moteur', 'selecteur'
-		Servo(std::string t_type,std::string t_chip);		//Constructeur 2
+		Servo(std::string t_type);		//Constructeur 2
 		void setDuty(int tmp);				//modifie le duty_cycle actuel	
 		std::string getType();															
 		std::string getChipEhr();			
 		std::string getChipEcap();
-		void commande(int input);
+		void commande(const std_msgs::Float64& msg);
+		void debug(const std_msgs::Float64& msg);
 		~Servo();							//destructeur
 
 
