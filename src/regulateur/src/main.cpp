@@ -1,11 +1,8 @@
 #include "../include/regulateur/main.hpp"
 
-
-
-
 Regulateur regulateur;
 
-void refreshGPSPosition(const gps_common::GPSFix& pos)
+void refreshGPSPosition(const nav_msgs::Odometry& pos)
 {
 	regulateur.setPosition(pos);
 }
@@ -37,7 +34,7 @@ int main(int argc, char **argv)
   	ros::Publisher topicDirection = n.advertise<std_msgs::Float64>("commandeDir", 1);
     ros::Publisher topicMoteur = n.advertise<std_msgs::Float64>("commandeMot",1);
   	//Subscribe
-  	ros::Subscriber topicGPS = n.subscribe("fix",10,refreshGPSPosition);
+  	ros::Subscriber topicGPS = n.subscribe("odom",10,refreshGPSPosition);
   	ros::Subscriber topicIMU = n.subscribe("imu",1,refreshYPR);
 
 

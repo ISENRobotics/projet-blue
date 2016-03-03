@@ -44,10 +44,10 @@ float Regulateur::process(float a[2], float b[2])
 
 }
 
-void Regulateur::setPosition(const gps_common::GPSFix& pos)
+void Regulateur::setPosition(const nav_msgs::Odometry& pos)
 {
-  position[0] = pos.latitude;
-  position[1] = pos.longitude;
+  position[1] = -pos.pose.position.x;
+  position[0] = pos.pose.position.y;
 
 }
 
@@ -56,20 +56,28 @@ void Regulateur::setTheta(const imu::YPR& data)
   theta = data.Y;
 }
 
-float Regulateur::setObjectifs()
+objectif Regulateur::setObjectifs()
 {
   std::string gpsString;
-  float a[2] ;
-
+  objectif balises;
+  std::istream iseof;
 
   std::ifstream fichier("/home/ubuntu/objectif.txt", std::ios::in);
 
   if (fichier)
   {
+    iseof = getline(fichier,gpsString);
+    if (iseof == eofbit)
+      balises.a[0] = atof( gpsString.c_str() );
     getline(fichier,gpsString);
-      a[0] = atof( gpsString.c_str() );
+      balises.a[1] = atof( gpsString.c_str() );
     getline(fichier,gpsString);
-      a[1] = atof( gpsString.c_str() );
+    getline(fichier,gpsString);
+      balises.b[0] = atof( gpsString.c_str() );
+    getline(fichier,gpsString);
+      balises.b[1] = atof( gpsString.c_str() );
+
+
     fichier.close();
   }
   else

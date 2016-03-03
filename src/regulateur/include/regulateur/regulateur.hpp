@@ -2,13 +2,19 @@
 #include <string>
 #include <ros/ros.h>
 #include <math.h>
-#include <gps_common/GPSFix.h>
+#include <sensor_msgs/NavSatFix.h>
+#include <nav_msgs/Odometry.h>
 #include <std_msgs/Float64.h>
 #include <imu/YPR.h>
 
 
 #define COULOIR 5
 
+struct objectif
+{
+	float a[2];
+	float b[2];
+};
 
 class Regulateur
 {
@@ -30,7 +36,7 @@ class Regulateur
 	public:
 		Regulateur();
 		float process(float a[2], float b[2]);
-		void setPosition(const gps_common::GPSFix& pos);
+		void setPosition(const nav_msgs::Odometry& pos);
 		void setTheta(const imu::YPR& data);
 		void setObjectifs();
 		void debug();
