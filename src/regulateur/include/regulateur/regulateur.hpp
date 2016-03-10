@@ -13,8 +13,8 @@
 
 struct objectif
 {
-	float a[2];		
-	float b[2];	//Objectif 
+	float a[2];
+	float b[2];
 };
 
 class Regulateur

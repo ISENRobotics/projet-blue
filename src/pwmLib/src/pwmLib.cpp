@@ -65,7 +65,7 @@ void Servo::setDuty(int tmp)
 	}	
 	else
 	{
-		std::cerr << "(methode setDuty)["<< type <<"] impossible d ecrire le duty" << std::endl;
+		std::cout << "(methode setDuty)["<< type <<"] impossible d ecrire le duty" << std::endl;
 	}
 }
 

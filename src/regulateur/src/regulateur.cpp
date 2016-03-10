@@ -20,11 +20,21 @@ Regulateur::Regulateur()
     objectifActuel = 1;
     nbresObjectifs = 0;
 
-    
+    //Determine le nombre d'objectif a atteindre
+    std::ifstream fichier("/home/rosuser/objectif.txt", std::ios::in);
+    int nbresDelignes;
+    while ( fichier.ignore( std::numeric_limits<int>::max(), '\n' ) )  
+    {  
+      ++nbresDeLignes;  
+    } 
+
+      // 3lignes sont utilise pour chaque objectif sauf le dernier objectif
+      // qui n'utilise que 2 lignes
+      nbresObjectifs = (nbresDeLignes+1)/3;  // si 11 lignes : 11+1/3 = 4 objectifs
 }
 
 float Regulateur::process(float a[2], float b[2])
-{ 
+{
   //Calcul du coeff directeur
   vInst[0] = b[0] - a[0];  //xb - xa
   vInst[1] = b[1] - a[1];  //yb -ya
@@ -60,7 +70,46 @@ void Regulateur::setTheta(const imu::YPR& data)
   theta = data.Y;
 }
 
+/*
+//Recupere la latitude et la longitude de l'objectif a atteindre
+objectif Regulateur::setObjectifs()
+{
 
+  std::string gpsString;
+  objectif balise;
+  std::ifstream fichier("/home/ubuntu/objectif.txt", std::ios::in);
+  int numLigneObjectif = (objectifActuel-1)*3 +1 ;
+  int i = 0;
+  if (fichier) 
+  { 
+    
+  } 
+
+
+
+  if (fichier)
+  {
+    iseof = getline(fichier,gpsString);
+    if (iseof == eofbit)
+      balises.a[0] = atof( gpsString.c_str() );
+    getline(fichier,gpsString);
+      balises.a[1] = atof( gpsString.c_str() );
+    getline(fichier,gpsString);
+    getline(fichier,gpsString);
+      balises.b[0] = atof( gpsString.c_str() );
+    getline(fichier,gpsString);
+      balises.b[1] = atof( gpsString.c_str() );
+
+
+    fichier.close();
+  }
+  else
+  {
+    std::cout << "impossible d ouvrir le fichier"<< std::endl;
+  }
+
+  return a;
+*/
 }
 
 void Regulateur::debug()

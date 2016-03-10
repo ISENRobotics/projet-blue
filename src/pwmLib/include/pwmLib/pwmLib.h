@@ -2,7 +2,7 @@
 #include <string>
 #include <fstream>
 #include <std_msgs/Float64.h>
-
+#include <boost/bind.hpp>
 
 #define DIR_PWM_MAX 1800000
 #define DIR_PWM_MIN 980000
@@ -29,9 +29,6 @@ class Servo
 		std::string chip;					//nom du chip instancie (pwmchip0/pwmchip1)
 		std::string path;					//chemin absolu du pwm
 		std::string type;
-
-		//Variables utilisé pour calculer le duty
-		//a genere en fonction de la commande
 		float k; 							//coefficient 
 		int zero;
 		
