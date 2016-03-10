@@ -2,6 +2,7 @@
 #include <string>
 #include <ros/ros.h>
 #include <math.h>
+#include <fstream>
 #include <sensor_msgs/NavSatFix.h>
 #include <nav_msgs/Odometry.h>
 #include <std_msgs/Float64.h>
@@ -12,8 +13,8 @@
 
 struct objectif
 {
-	float a[2];
-	float b[2];
+	float a[2];		
+	float b[2];	//Objectif 
 };
 
 class Regulateur
@@ -29,6 +30,11 @@ class Regulateur
 		float thetaD;
 		float diffTheta;
 		float deltaD;
+		std::vector< std::vector<float> > objectifs;
+		int objectifActuel;
+		int nbresObjectifs;
+		std::ifstream fichier;
+		int nbresDeLignes;
 
 
 

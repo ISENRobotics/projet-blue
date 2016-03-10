@@ -24,12 +24,12 @@ echo "[GPSd] Initialisation terminee"
 ##Au demarrage le chemin des pwms peut changer
 ##Voir (http://permalink.gmane.org/gmane.comp.hardware.beagleboard.user/86807)
 echo "[PWM] Recherche des chemins des pwms..."
-ls /sys/devices/platform/ocp/subsystem/devices/48302200.ehrpwm/pwm/ > pwmcfg/ehrpwm.cfg
-ls /sys/devices/platform/ocp/subsystem/devices/48300100.ecap/pwm/ > pwmcfg/ecap.cfg
+ls /sys/devices/platform/ocp/subsystem/devices/48302200.ehrpwm/pwm/ > /home/ubuntu/init/pwmcfg/ehrpwm.cfg
+ls /sys/devices/platform/ocp/subsystem/devices/48300100.ecap/pwm/ > /home/ubuntu/init/pwmcfg/ecap.cfg
 sleep 2
 
-ecapvar=`cat ./pwmcfg/ecap.cfg`
-ehrpwmvar=`cat ./pwmcfg/ehrpwm.cfg`
+ecapvar=`cat /home/ubuntu/init/pwmcfg/ecap.cfg`
+ehrpwmvar=`cat /home/ubuntu/init/pwmcfg/ehrpwm.cfg`
 
 
 #Installation du 1er pwm P9_14 : direction

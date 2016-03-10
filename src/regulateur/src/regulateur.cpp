@@ -17,10 +17,14 @@ Regulateur::Regulateur()
     thetaD = 0;
     diffTheta = 0;
     deltaD = 0;
+    objectifActuel = 1;
+    nbresObjectifs = 0;
+
+    
 }
 
 float Regulateur::process(float a[2], float b[2])
-{
+{ 
   //Calcul du coeff directeur
   vInst[0] = b[0] - a[0];  //xb - xa
   vInst[1] = b[1] - a[1];  //yb -ya
@@ -46,8 +50,8 @@ float Regulateur::process(float a[2], float b[2])
 
 void Regulateur::setPosition(const nav_msgs::Odometry& pos)
 {
-  position[1] = -pos.pose.position.x;
-  position[0] = pos.pose.position.y;
+  position[1] = -pos.pose.pose.position.x;
+  position[0] = pos.pose.pose.position.y;
 
 }
 
@@ -56,36 +60,6 @@ void Regulateur::setTheta(const imu::YPR& data)
   theta = data.Y;
 }
 
-objectif Regulateur::setObjectifs()
-{
-  std::string gpsString;
-  objectif balises;
-  std::istream iseof;
-
-  std::ifstream fichier("/home/ubuntu/objectif.txt", std::ios::in);
-
-  if (fichier)
-  {
-    iseof = getline(fichier,gpsString);
-    if (iseof == eofbit)
-      balises.a[0] = atof( gpsString.c_str() );
-    getline(fichier,gpsString);
-      balises.a[1] = atof( gpsString.c_str() );
-    getline(fichier,gpsString);
-    getline(fichier,gpsString);
-      balises.b[0] = atof( gpsString.c_str() );
-    getline(fichier,gpsString);
-      balises.b[1] = atof( gpsString.c_str() );
-
-
-    fichier.close();
-  }
-  else
-  {
-    std::cout << "impossible d ouvrir le fichier"<< std::endl;
-  }
-
-  return a;
 
 }
 

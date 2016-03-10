@@ -2,7 +2,6 @@
  <node name="imu_node" pkg="imu" type="imu_node" respawn="true" />
  <node name="gpsd_client" pkg="gpsd_client" type="gpsd_client" respawn="true" />
  <node name="pwmServo_node" pkg="pwmServo" type="pwmServo_node" respawn="true" />
-  <node name="regulateur_node" pkg="regulateur" type="regulateur_node" respawn="true" />
-
- 
+ <node name="regulateur_node" pkg="regulateur" type="regulateur_node" respawn="true" />
+ <node name="utm_odometry_node" pkg="gps_common" type="utm_odometry_node" respawn="true" />
 </launch>
