@@ -131,11 +131,11 @@ include_directories(
 # add_dependencies(regulateur ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Declare a C++ executable
- add_executable(regulateur_node src/main.cpp)
+ add_executable(regulateur_node src/regulateur_node.cpp)
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
- #add_dependencies(regulateur_node ${${PROJECT_NAME}_EXPORTED_TARGETS} #${catkin_EXPORTED_TARGETS} regulateur)
+ add_dependencies(regulateur_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS} regulateur)
 
 ## Specify libraries to link a library or executable target against
  target_link_libraries(regulateur_node

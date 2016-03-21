@@ -1,4 +1,4 @@
-#include <mission.hpp>
+#include <mission/mission.hpp>
 
 //Constructeur
 Mission::Mission()
@@ -12,12 +12,8 @@ Mission::Mission(std::string chemin)
 {
 	objectifActuel = 0;
 
-
-
-
 	//Determine le nombre d'objectif a atteindre
-    std::ifstream fichier("/home/rosuser/objectif.txt", std::ios::in);
-    int nbresDelignes;
+   	std::ifstream fichier("/home/objectifs.txt", std::ios::in);
     while ( fichier.ignore( std::numeric_limits<int>::max(), '\n' ) )  
     {  
       ++nbresDeLignes;  
@@ -25,7 +21,7 @@ Mission::Mission(std::string chemin)
 
       // 3lignes sont utilise pour chaque objectif sauf le dernier objectif
       // qui n'utilise que 2 lignes
-      nbresObjectifs = (nbresDeLignes+1)/3;  // si 11 lignes : 11+1/3 = 4 objectifs
+      nbresObjectifs = (nbresDeLignes+1)/3;  // si 11 lignes : (11+1)/3 = 4 objectifs
 }
 
 
@@ -42,13 +38,13 @@ std::fstream& Mission::goToLine(std::fstream& file, unsigned int num)
 }
 
 //Recupere la latitude et la longitude de l'objectif a atteindre
-droiteGPS Mission::setObjectif_droiteGPS(std::string chemin,int objectifActuel)
+objectif Mission::setObjectif_droiteGPS(std::string chemin,int objectifActuel)
 {
 
 	//Declaration des variables
 	std::string buffer;
-	droiteGPS result;
-	std::ifstream fichier(chemin, std::ios::in);
+	objectif result;
+	std::fstream fichier(chemin.c_str(), std::ios::in);
 	int numLigneObjectif = (objectifActuel-1)*3 +1 ;
 
 
@@ -56,16 +52,16 @@ droiteGPS Mission::setObjectif_droiteGPS(std::string chemin,int objectifActuel)
 	{
 		//1ere position GPS : a
 		goToLine(fichier, numLigneObjectif);
-		getLine(fichier, buffer);
+		std::getline(fichier, buffer);
 		result.a[0] = std::stof(buffer);
-		getLine(fichier, buffer);
+		std::getline(fichier, buffer);
 		result.a[1] = std::stof(buffer);
 
 		//2eme position gps : b
 		goToLine(fichier, numLigneObjectif+3);
-		getLine(fichier, buffer);
+		std::getline(fichier, buffer);
 		result.b[0] = std::stof(buffer);
-		getLine(fichier, buffer);
+		std::getline(fichier, buffer);
 		result.b[1] = std::stof(buffer);
 
 		fichier.close();

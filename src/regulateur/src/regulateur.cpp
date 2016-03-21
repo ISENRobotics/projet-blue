@@ -1,40 +1,33 @@
-#include "../include/regulateur/regulateur.hpp"
+#include <regulateur/regulateur.hpp>
 
+//initialisation de membres statiques
+objectif Regulateur::obj;
+
+
+//Constructeur par defaut
 Regulateur::Regulateur()
 {
     position[0] = -70;
     position[1] = -80;
-    vInst[1] = 0;
-    vInst[0] = 0;
     theta = 0;
     deltaMax = M_PI/8;
-    u[0] = 0;
-    u[1] = 0;
-    v[0] = 0;
-    v[1] = 0;
-    determinantUV = 0;    //Determinant de la matrice [u v]
-    phi = 0;
-    thetaD = 0;
-    diffTheta = 0;
-    deltaD = 0;
-    objectifActuel = 1;
-    nbresObjectifs = 0;
+    deltaD = 0;   
 
-    //Determine le nombre d'objectif a atteindre
-    std::ifstream fichier("/home/rosuser/objectif.txt", std::ios::in);
-    int nbresDelignes;
-    while ( fichier.ignore( std::numeric_limits<int>::max(), '\n' ) )  
-    {  
-      ++nbresDeLignes;  
-    } 
-
-      // 3lignes sont utilise pour chaque objectif sauf le dernier objectif
-      // qui n'utilise que 2 lignes
-      nbresObjectifs = (nbresDeLignes+1)/3;  // si 11 lignes : 11+1/3 = 4 objectifs
 }
 
-float Regulateur::process(float a[2], float b[2])
+//Calcule l'angle des roues avant necessaire pour le suivi de ligne
+float Regulateur::process()
 {
+  //Declaration des variables
+  float a[2],b[2],vInst[2],u[2],v[2];
+  float determinantUV,phi,thetaD,diffTheta;
+
+  //assignation de l'objectif
+  a[0] = Regulateur::obj.a[0];
+  a[1] = Regulateur::obj.a[1];
+  b[0] = Regulateur::obj.b[0];
+  b[1] = Regulateur::obj.b[1];
+
   //Calcul du coeff directeur
   vInst[0] = b[0] - a[0];  //xb - xa
   vInst[1] = b[1] - a[1];  //yb -ya
@@ -55,9 +48,10 @@ float Regulateur::process(float a[2], float b[2])
   deltaD = (deltaMax * diffTheta) / M_PI;
 
   return deltaD;
-
 }
 
+
+//Recupere la position actuelle
 void Regulateur::setPosition(const nav_msgs::Odometry& pos)
 {
   position[1] = -pos.pose.pose.position.x;
@@ -65,75 +59,22 @@ void Regulateur::setPosition(const nav_msgs::Odometry& pos)
 
 }
 
+
+//Recupere le cap actuelle
 void Regulateur::setTheta(const imu::YPR& data)
 {
   theta = data.Y;
 }
 
-/*
-//Recupere la latitude et la longitude de l'objectif a atteindre
-objectif Regulateur::setObjectifs()
+//Recupere l'objectif actuel
+void Regulateur::setObjectif(objectif tmpObj)
 {
-
-  std::string gpsString;
-  objectif balise;
-  std::ifstream fichier("/home/ubuntu/objectif.txt", std::ios::in);
-  int numLigneObjectif = (objectifActuel-1)*3 +1 ;
-  int i = 0;
-  if (fichier) 
-  { 
-    
-  } 
-
-
-
-  if (fichier)
-  {
-    iseof = getline(fichier,gpsString);
-    if (iseof == eofbit)
-      balises.a[0] = atof( gpsString.c_str() );
-    getline(fichier,gpsString);
-      balises.a[1] = atof( gpsString.c_str() );
-    getline(fichier,gpsString);
-    getline(fichier,gpsString);
-      balises.b[0] = atof( gpsString.c_str() );
-    getline(fichier,gpsString);
-      balises.b[1] = atof( gpsString.c_str() );
-
-
-    fichier.close();
-  }
-  else
-  {
-    std::cout << "impossible d ouvrir le fichier"<< std::endl;
-  }
-
-  return a;
-*/
+  Regulateur::obj.a[0] = tmpObj.a[0];
+  Regulateur::obj.a[1] = tmpObj.b[1];
+  Regulateur::obj.b[0] = tmpObj.b[0];
+  Regulateur::obj.b[1] = tmpObj.b[1];
 }
 
-void Regulateur::debug()
-{
-  std::cout << "\n##debug() ------------\n"
-            << ". position[0] =" << position[0]
-            << "\t. position[1] =" << position[1]
-            << "\n. vInst[0](vec) =" << vInst[0]
-            << "\t. vInst[1](vec) =" << vInst[1]
-            << "\n. theta = " << theta
-            << "\n. deltaMax = " << deltaMax
-            << "\n. u[0] =" << u[0]
-            << "\t. u[1] =" << u[1]
-            << "\n. v[0] =" << v[0]
-            << "\t. v[1] =" << v[1]
-            << "\n. determinantUV =" << determinantUV
-            << "\n. phi =" << phi
-            << "\n. thetaD =" << thetaD
-            << "\n. diffTheta =" << diffTheta
-            << "\n. deltaMax =" << deltaMax
-            << "\n. deltaD = " << deltaD
-            << "\n------------ debug()##\n" << std::endl;
-
-}
 
 Regulateur::~Regulateur()
 {

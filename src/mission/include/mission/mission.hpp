@@ -2,8 +2,9 @@
 #include <string>
 #include <fstream>
 #include <limits>
+#include "ros/ros.h"
 
-struct droiteGPS
+struct objectif
 {
 	float a[2];		//lat & long du point a
 	float b[2];
@@ -16,19 +17,20 @@ class Mission
 	private:
 		int nbresObjectifs;
 		int objectifActuel;
-		droiteGPS droite;
+		objectif droite;
+		int nbresDeLignes;
 
 
 
 	public:
-		mission();
+		Mission();
 
-		mission(std::string chemin,);
+		Mission(std::string chemin);
 
 		//http://stackoverflow.com/questions/5207550/in-c-is-there-a-way-to-go-to-a-specific-line-in-a-text-file
 		std::fstream& goToLine(std::fstream& file, unsigned int num);
 
 		//Recupere la position GPS de l'objectif actuel
-		float[] setObjectif_droiteGPS(int objectifActuel);
-		~mission();
-}
+		objectif setObjectif_droiteGPS(std::string chemin ,int objectifActuel);
+		~Mission();
+};
