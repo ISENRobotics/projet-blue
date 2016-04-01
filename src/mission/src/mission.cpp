@@ -12,7 +12,7 @@ Mission::Mission(std::string path,float braquageMax)
 	deltaMax = braquageMax;
 	cheminObjectif = path.c_str();
 	objectifActuel = 0;
-	objectifAtteint = false;
+	this->objectifAtteint = false;
 
 
 	//Determine le nombre d'objectif a atteindre
@@ -73,32 +73,33 @@ void Mission::setObjectif(int objectifActuel)
 	if (fichier)
 	{
 		//1ere position GPS : a
-		goToLine(fichier, numLigneObjectif);
-		std::getline(fichier, buffer);
-		result.a[0] = std::stof(buffer);
-		std::cout << "a.x = " << std::setprecision(6) << result.a[0] << std::endl;	
-		std::getline(fichier, buffer);
-		result.a[1] = std::stof(buffer);
-		std::cout << "a.y = " << std::setprecision(6) << result.a[1] << std::endl;	
+		goToLine(fichier,numLigneObjectif);
+		fichier >> buffer;
+		result.a[0] = std::stod(buffer);
+		
+		goToLine(fichier, numLigneObjectif+1);
+		fichier >> buffer;
+		result.a[1] = std::stod(buffer);
+
 		gps_common::LLtoUTM(result.a[0], result.a[1], northing, easting, zone);
 		result.a[0] = northing;
 		result.a[1] = -easting;
-		std::cout << "a.northing  = " << std::setprecision(6) << result.a[0] << std::endl;	
-		std::cout << "a.easting = " << std::setprecision(6) << result.a[1] << std::endl;	
+		
 
 		//2eme position gps : b
 		goToLine(fichier, numLigneObjectif+3);
-		std::getline(fichier, buffer);
-		result.b[0] = std::stof(buffer);
-		std::cout << "b.x = " << std::setprecision(6) << result.b[0] << std::endl;		
-		std::getline(fichier, buffer);
-		result.b[1] = std::stof(buffer);
-		std::cout << "b.y =" << std::setprecision(6) << result.b[1] << std::endl;		
+		fichier >> buffer;
+		result.b[0] = std::stod(buffer);
+
+		
+		goToLine(fichier, numLigneObjectif+4);	
+		fichier >> buffer;
+		result.b[1] = std::stod(buffer);
+
 		gps_common::LLtoUTM(result.b[0], result.b[1], northing, easting, zone);
 		result.b[0] = northing;
 		result.b[1] = -easting;
-		std::cout << "b.northing  = " << std::setprecision(6)  << result.b[0] << std::endl;	
-		std::cout << "b.easting = " << std::setprecision(6) << result.b[1] << std::endl;
+		
 		fichier.close();
 
 		this->obj = result;

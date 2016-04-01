@@ -1,8 +1,6 @@
 #include <mission/mission_node.hpp>
 
 
-
-
 // ---------------------------------------------------
 // -------------- Main -------------------------------
 // ---------------------------------------------------
@@ -39,12 +37,13 @@ int main(int argc, char **argv)
 	  		Debut de la mission
 	  	*/
 
-	  	//on stocke la position initiale de la voiture
+	  	//on stocke la position initiale de la voiture & recuperation du 1er objectif
 	  	if (posInitialeRecup == false)
 	  	{
 	  		ROS_INFO("[mission_node] Recuperation de la position initiale\n");
 	  		mission.posInitiale = mission.getPosition();
-	  		posInitialeRecup = true;	  		
+	  		posInitialeRecup = true;	
+	  		mission.setObjectif(mission.objectifActuel);  		
 	  	}
 
 	  	//si l'objectif est atteint
@@ -79,6 +78,7 @@ int main(int argc, char **argv)
 	  	topicRegulateur.publish(messageReg);
 	  	topicMot.publish(messageMot);
 
+	  	/*
 	  	//Si la voiture est dans le cercle de 2m autour de la balise b
 	  	if ((pos.x >= (obj.b[0]-2)) && (pos.x <= (obj.b[0]+2)) )
 	  	{
@@ -89,7 +89,7 @@ int main(int argc, char **argv)
 	  			mission.objectifAtteint = true;
 	  		}
 	  	}
-
+		*/
 	    //rajouter pour le refresh
 	    ros::spinOnce();
 

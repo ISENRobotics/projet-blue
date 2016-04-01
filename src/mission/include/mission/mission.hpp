@@ -19,8 +19,8 @@ struct position
 //Structure représentant un objectif (une droite)
 struct objectif
 {
-	float a[2];		//lat & long du point a
-	float b[2];
+	double a[2];		//lat & long du point a
+	double b[2];
 };
 
 
