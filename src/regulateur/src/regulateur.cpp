@@ -11,6 +11,8 @@ Regulateur::Regulateur()
     obj.b[0] = 0;
     obj.b[1] = 0;
     deltaMax = 0;
+    thetaDes = 0;
+    deltaDes = 0;
 }
 
 //Calcule l'angle des roues avant necessaire pour le suivi de ligne
@@ -45,11 +47,13 @@ float Regulateur::regul(position pos,float cap,objectif obj,float deltaMax)
   phi = atan2(vInst[1],vInst[0]);
 
   thetaD = phi - atan(determinantUV/COULOIR);
+  this->thetaDes = thetaD;
 
   diffTheta = thetaD - theta;
   diffTheta = fmod((diffTheta + M_PI),(2*M_PI) ) - M_PI;
   deltaD = (deltaMax * diffTheta) / M_PI;
 
+  this->deltaDes = deltaD;
   return deltaD;
 }
 
@@ -94,4 +98,32 @@ objectif Regulateur::getObjectif()
 float Regulateur::getDeltaMax()
 {
   return this->deltaMax;
+}
+
+void Regulateur::getGPSPosition(const sensor_msgs::NavSatFix::ConstPtr& gpsData)
+{
+  this->posGPS.x = gpsData->latitude;
+  this->posGPS.y = gpsData->longitude;
+}
+
+void Regulateur::debug()
+{
+  FILE * fp;
+
+   fp = fopen ("/home/ubuntu/debug.txt", "w");
+   fprintf(fp, "%10.10f,%10.10f,%10.10f,%10.10f,%10.10f,%10.10f,%10.10f,%10.10f,%10.10f,%10.10f,%10.10f\n",
+                                                                                                               this->posGPS.x,
+                                                                                                               this->posGPS.y,
+                                                                                                               this->pos.x,
+                                                                                                               this->pos.y,
+                                                                                                               this->obj.a[0],
+                                                                                                               this->obj.a[1],
+                                                                                                               this->obj.b[0],
+                                                                                                               this->obj.b[1],
+                                                                                                               this->cap,
+                                                                                                               this->thetaDes,
+                                                                                                               this->deltaDes);
+ 
+   
+   fclose(fp);
 }

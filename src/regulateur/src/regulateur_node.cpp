@@ -18,7 +18,7 @@ int main(int argc, char **argv)
 
   //Subscribe (topic du regulateur)
     ros::Subscriber topicInput = n.subscribe("inputRegulateur",10,&Regulateur::setRegulateurInput,&regulateur1);
-
+    ros::Subscriber topicGPS = n.subscribe("fix",1,&Regulateur::getGPSPosition,&regulateur1);
 
 
   //frequence de calcul de l'asservissement

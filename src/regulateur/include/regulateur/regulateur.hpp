@@ -4,6 +4,7 @@
 #include <math.h>
 #include <fstream>
 #include <std_msgs/Float64.h>
+#include <sensor_msgs/NavSatFix.h>
 #include <regulateur/reg.h>
 
 #define COULOIR 2
@@ -27,9 +28,12 @@ class Regulateur
 {
 	private:
 		position pos;
+		position posGPS;
 		float cap;
 		objectif obj;
 		float deltaMax;
+		float thetaDes;
+		float deltaDes;
 
 
 	public:
@@ -41,5 +45,7 @@ class Regulateur
 	objectif getObjectif();
 	float getDeltaMax();
 	float regul(position pos,float cap,objectif obj,float deltaMax);
+	void debug();
+	void getGPSPosition(const sensor_msgs::NavSatFix::ConstPtr& gpsData);
 
 };

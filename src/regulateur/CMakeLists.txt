@@ -11,6 +11,7 @@ find_package(catkin REQUIRED COMPONENTS
   gps_common
   imu
   message_generation
+  sensor_msgs
 )
 
 ## System dependencies are found with CMake's conventions
@@ -105,7 +106,7 @@ generate_messages(
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES regulateur
-  CATKIN_DEPENDS roscpp rospy std_msgs message_runtime
+  CATKIN_DEPENDS roscpp rospy std_msgs message_runtime sensor_msgs
   DEPENDS system_lib
 )
 
