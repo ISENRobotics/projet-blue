@@ -4,6 +4,7 @@
 #include <math.h>
 #include <fstream>
 #include <std_msgs/Float64.h>
+#include <regulateur/reg.h>
 
 #define COULOIR 2
 
@@ -22,4 +23,23 @@ struct objectif
 	float b[2];
 };
 
-float regul(position pos,float cap,objectif obj,float deltaMax);
+class Regulateur
+{
+	private:
+		position pos;
+		float cap;
+		objectif obj;
+		float deltaMax;
+
+
+	public:
+	//Fonction de callback ros
+	Regulateur();
+	void setRegulateurInput(const regulateur::reg& param);
+	position getPosition();
+	float getCap();
+	objectif getObjectif();
+	float getDeltaMax();
+	float regul(position pos,float cap,objectif obj,float deltaMax);
+
+};

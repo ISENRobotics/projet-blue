@@ -1,36 +1,23 @@
 #include <regulateur/regulateur_node.hpp>
 
-regInput inReg;
-
-//position gps
-void getRegulateurInput(const regulateur::reg& param)
-{
-  inReg.pos.x = param.pos0;
-  inReg.pos.y = param.pos1;
-  inReg.cap = param.cap;
-  inReg.obj.a[0] = param.obja0;
-  inReg.obj.a[1] = param.obja1;
-  inReg.obj.b[0] = param.objb0;
-  inReg.obj.b[1]= param.objb1;
-  inReg.deltaMax = param.deltaMax;
-}
 
 int main(int argc, char **argv)
 {
 
   //Initialisation
-
+    ros::init(argc, argv, "regulateur_node");
 
   //Declaration des variables
   ros::NodeHandle n;
   std_msgs::Float64 commande;
+  Regulateur regulateur1;
 
   //Publish (direction & vitesse)
     ros::Publisher topicDirection = n.advertise<std_msgs::Float64>("commandeDir", 1);
     
 
   //Subscribe (topic du regulateur)
-    ros::Subscriber topicInput = n.subscribe("inputRegulateur",10,getRegulateurInput);
+    ros::Subscriber topicInput = n.subscribe("inputRegulateur",10,&Regulateur::setRegulateurInput,&regulateur1);
 
 
 
@@ -42,8 +29,8 @@ int main(int argc, char **argv)
   while (ros::ok())
   {
     //Calcule la commande de direction
-    commande.data = regul(inReg.pos, inReg.cap, inReg.obj, inReg.deltaMax );
-    std::cout << "commande =" << commande.data << std::endl;
+    commande.data = regulateur1.regul(regulateur1.getPosition(), regulateur1.getCap(), regulateur1.getObjectif(), regulateur1.getDeltaMax() );
+    ROS_INFO("[regulateur_node] commande : %f",commande.data);
 
     //publie les message
     topicDirection.publish(commande);
@@ -59,3 +46,4 @@ int main(int argc, char **argv)
 
   return 0;
 }
+

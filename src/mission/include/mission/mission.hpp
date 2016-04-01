@@ -1,4 +1,5 @@
 #include <iostream>
+#include <iomanip>
 #include <string>
 #include <fstream>
 #include <limits>
@@ -40,7 +41,7 @@ class Mission
 	public:
 		int nbresObjectifs;				//nbres d'objectif  à atteindre
 		int objectifActuel;				//numero de l'objectif actuel
-		float positionInitiale[2];		//position initiale de la voiture(odom)
+		struct position posInitiale;		//position initiale de la voiture(odom)
 		bool objectifAtteint;			//1 si on est sur l'objectif
 		//vars utilisés pour l'initiallisation
 		int nbresDeLignes;		
@@ -50,11 +51,11 @@ class Mission
 		Mission(std::string path,float braquageMax);
 
 		//recupere la position actuelle de la voiture
-		void setPosition(const nav_msgs::Odometry& posi);
+		void setPosition(const nav_msgs::Odometry::ConstPtr& posi);
 		const struct  position getPosition();
 
 		//recupere le cap actuelle
-		void setCap(const imu::YPR& data);
+		void setCap(const imu::YPR::ConstPtr& data);
 		float getCap();
 
 		//Recupere la position GPS de l'objectif actuel
@@ -63,6 +64,9 @@ class Mission
 
 		//recupere le deltaMax
 		float getDeltaMax();
+
+		//debug
+		void debug();
 
 		//destructeur
 		~Mission();

@@ -24,7 +24,7 @@ int main(int argc, char **argv)
   //Publish
   	//pour le regulateur
   	ros::Publisher topicRegulateur = n.advertise<regulateur::reg>("inputRegulateur",1);
-    ros::Publisher topicMot = n.advertise<std_msgs::Float64>("commandeMot",1);
+    ros::Publisher topicMot = n.advertise<std_msgs::Float64>("commandeMot",10);
   //Subscribe (cap & position)
   	ros::Subscriber topicGPS = n.subscribe("odom",10,&Mission::setPosition,&mission);
   	ros::Subscriber topicIMU = n.subscribe("imu",1,&Mission::setCap,&mission);
@@ -32,25 +32,30 @@ int main(int argc, char **argv)
   //frequence de calcul de l'asservissement
   ros::Rate loop_rate(10);
 
-
 	while (ros::ok())
 	 {
-
+		ROS_INFO("iteration de la boucle ros::ok\n");
 	  	/*
 	  		Debut de la mission
 	  	*/
 
 	  	//on stocke la position initiale de la voiture
-	  	if (!posInitialeRecup)
+	  	if (posInitialeRecup == false)
 	  	{
-	  		position posIni = mission.getPosition();
-	  		mission.positionInitiale[0] = posIni.x;
-	  		mission.positionInitiale[1] = posIni.y;
+	  		ROS_INFO("[mission_node] Recuperation de la position initiale\n");
+	  		mission.posInitiale = mission.getPosition();
 	  		posInitialeRecup = true;	  		
 	  	}
 
-	  	mission.setObjectif(mission.objectifActuel);
-	  	mission.objectifAtteint = false;
+	  	//si l'objectif est atteint
+	  	if (mission.objectifAtteint == true)
+	  	{
+	  		std::cout << "objectif atteint \n" << std::endl;
+	  		mission.objectifActuel++;
+	  		mission.setObjectif(mission.objectifActuel);
+	  		mission.objectifAtteint = false;
+	  	}
+	  	
 
 	  	//recupere l'objectif a atteindre
 	  	//& preparation du message pour le topic regulateur
@@ -61,39 +66,29 @@ int main(int argc, char **argv)
 	  	messageReg.objb1 = obj.b[1];
 	  	messageReg.deltaMax = mission.getDeltaMax();
 
-	  	//Tant que l'objcetif n'est pas atteint
-	  	while (!mission.objectifAtteint)
-	  	{
+  		//pour la direction
+	  	position pos = mission.getPosition();
+	  	messageReg.pos0 = pos.x;
+	  	messageReg.pos1 = pos.y;
+	  	messageReg.cap = mission.getCap();
 
-	  		//pour la direction
-		  	position pos = mission.getPosition();
-		  	messageReg.pos0 = pos.x;
-		  	messageReg.pos1 = pos.y;
-		  	messageReg.cap = mission.getCap();
+	  	//pour la vitesse
+	  	messageMot.data = 50;
 
-		  	//pour la vitesse
-		  	messageMot.data = 30;
-
-		  	//Publication sur les topis
-		  	topicRegulateur.publish(messageReg);
-		  	topicMot.publish(messageMot);
-
-		  	//Si la voiture est dans le cercle de 2m autour de la balise b
-		  	if ((pos.x >= (obj.b[0]-2)) && (pos.x <= (obj.b[0]+2)) )
-		  	{
-		  		if((pos.y >= (obj.b[1]-2)) && (pos.y <= (obj.b[1]+2)) )
-		  		{
-		  			mission.objectifAtteint = true;
-		  			mission.objectifActuel++;
-
-		  		}
-		  	}
-
-	  	}
-
-	  	messageMot.data = 0;
+	  	//Publication sur les topis
+	  	topicRegulateur.publish(messageReg);
 	  	topicMot.publish(messageMot);
 
+	  	//Si la voiture est dans le cercle de 2m autour de la balise b
+	  	if ((pos.x >= (obj.b[0]-2)) && (pos.x <= (obj.b[0]+2)) )
+	  	{
+	  		ROS_INFO("[mission_node] pos.x dans le cercle de l'objectif\n");
+	  		if((pos.y >= (obj.b[1]-2)) && (pos.y <= (obj.b[1]+2)) )
+	  		{
+	  			ROS_INFO("[mission_node] pos.y dans le cercke de l'objectif");
+	  			mission.objectifAtteint = true;
+	  		}
+	  	}
 
 	    //rajouter pour le refresh
 	    ros::spinOnce();
