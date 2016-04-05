@@ -32,7 +32,6 @@ int main(int argc, char **argv)
 
 	while (ros::ok())
 	 {
-		ROS_INFO("iteration de la boucle ros::ok\n");
 	  	/*
 	  		Debut de la mission
 	  	*/
@@ -65,11 +64,27 @@ int main(int argc, char **argv)
 	  	messageReg.objb1 = obj.b[1];
 	  	messageReg.deltaMax = mission.getDeltaMax();
 
+
+
   		//pour la direction
 	  	position pos = mission.getPosition();
 	  	messageReg.pos0 = pos.x;
 	  	messageReg.pos1 = pos.y;
 	  	messageReg.cap = mission.getCap();
+
+	  	std::cout << "\n----------------------------------\n"
+		  << "parametres envoyees au regulateur "
+		  << "-position\n"
+		  << "		(utm)pos.x :" << pos.x
+		  << "\n 	(utm)pos.y :" << pos.y
+		  << "\n-objectif\n"
+		  << "		(utm)obj.a[0] :" << obj.a[0]
+		  <<"\n 	(utm)obj.a[1] :" << obj.a[1]
+		  <<"\n 	(utm)obj.b[0] :" << obj.b[0]
+		  <<"\n 	(utm)obj.b[1] :" << obj.b[1]
+		  <<"\n-deltaMax :" << mission.getDeltaMax()
+		  <<"\n-cap :" << mission.getCap()
+		  <<"\n------------------------------------" << std::endl;
 
 	  	//pour la vitesse
 	  	messageMot.data = 50;
@@ -78,18 +93,18 @@ int main(int argc, char **argv)
 	  	topicRegulateur.publish(messageReg);
 	  	topicMot.publish(messageMot);
 
-	  	/*
+	  	
 	  	//Si la voiture est dans le cercle de 2m autour de la balise b
-	  	if ((pos.x >= (obj.b[0]-2)) && (pos.x <= (obj.b[0]+2)) )
+	  	if ((pos.x >= (obj.b[0]-0.002)) && (pos.x <= (obj.b[0]+0.002)) )
 	  	{
 	  		ROS_INFO("[mission_node] pos.x dans le cercle de l'objectif\n");
-	  		if((pos.y >= (obj.b[1]-2)) && (pos.y <= (obj.b[1]+2)) )
+	  		if((pos.y >= (obj.b[1]-0.002)) && (pos.y <= (obj.b[1]+0.002)) )
 	  		{
 	  			ROS_INFO("[mission_node] pos.y dans le cercke de l'objectif");
 	  			mission.objectifAtteint = true;
 	  		}
 	  	}
-		*/
+		
 	    //rajouter pour le refresh
 	    ros::spinOnce();
 

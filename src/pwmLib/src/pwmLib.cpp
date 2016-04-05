@@ -67,7 +67,7 @@ void Servo::setDuty(int tmp)
 	}	
 	else
 	{
-		std::cout << "(methode setDuty)["<< type <<"] impossible d ecrire le duty" << std::endl;
+		std::cerr << "(methode setDuty)["<< type <<"] impossible d ecrire le duty" << std::endl;
 		std::cerr <<"path : " << path.c_str() << std::endl;
 	}
 }
@@ -123,7 +123,7 @@ void Servo::commande(const std_msgs::Float64::ConstPtr& msg)
 
 
 	float input = msg->data;
-	float commandeNs = zero + input* k;
+	float commandeNs = zero + input * k;
 
 	if(type== "direction" || "moteur" || "selecteur")
 	{

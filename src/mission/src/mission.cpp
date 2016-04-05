@@ -35,8 +35,8 @@ float Mission::getDeltaMax()
 //Recupere la position
 void Mission::setPosition(const nav_msgs::Odometry::ConstPtr& posi)
 {	
-	pos.x = posi->pose.pose.position.y;
-	pos.y = -posi->pose.pose.position.x;
+	pos.x = posi->pose.pose.position.x;
+	pos.y = posi->pose.pose.position.y;
 
 }
 
@@ -83,7 +83,7 @@ void Mission::setObjectif(int objectifActuel)
 
 		gps_common::LLtoUTM(result.a[0], result.a[1], northing, easting, zone);
 		result.a[0] = northing;
-		result.a[1] = -easting;
+		result.a[1] = easting;
 		
 
 		//2eme position gps : b
@@ -98,7 +98,7 @@ void Mission::setObjectif(int objectifActuel)
 
 		gps_common::LLtoUTM(result.b[0], result.b[1], northing, easting, zone);
 		result.b[0] = northing;
-		result.b[1] = -easting;
+		result.b[1] = easting;
 		
 		fichier.close();
 

@@ -13,6 +13,7 @@ Regulateur::Regulateur()
     deltaMax = 0;
     thetaDes = 0;
     deltaDes = 0;
+    index = 0;
 }
 
 //Calcule l'angle des roues avant necessaire pour le suivi de ligne
@@ -43,17 +44,64 @@ float Regulateur::regul(position pos,float cap,objectif obj,float deltaMax)
   v[1] = posi[1] - a[1];
 
   determinantUV = u[0]*v[1] - u[1]*v[0];
+  //new:
+  //determinantUV = v[0]*u[1] - v[1]*u[0];
+
 
   phi = atan2(vInst[1],vInst[0]);
 
+
   thetaD = phi - atan(determinantUV/COULOIR);
-  this->thetaDes = thetaD;
+
 
   diffTheta = thetaD - theta;
   diffTheta = fmod((diffTheta + M_PI),(2*M_PI) ) - M_PI;
-  deltaD = (deltaMax * diffTheta) / M_PI;
 
-  this->deltaDes = deltaD;
+  //old:deltaD = (deltaMax * diffTheta) / M_PI;
+
+  deltaD = diffTheta;
+  if (deltaD > deltaMax)
+  {
+    deltaD = deltaMax;
+  }
+
+  if(deltaD < -deltaMax)
+  {
+    deltaD = -deltaMax;
+  }
+
+
+
+  //Association au attributs
+    this->u[0] = u[0];
+    this->u[1] = u[1];
+    this->v[0] = v[0];
+    this->v[1] = v[1];
+    this->detUV = determinantUV;
+    this->phi = phi;
+    this->thetaDes = thetaD;
+    this->deltaDes = deltaD;
+    this->diffTheta = diffTheta;
+    this->cap = theta;
+
+      std::cout << "\n----------------------------------\n"
+            << "valeurs du regulateur : "
+            << "-position\n"
+            << "    (utm)pos.x :" << posi[0]
+            << "\n  (utm)pos.y :" << posi[1]
+            << "\n-objectif\n"
+            << "    (utm)obj.a[0] :" << a[0]
+            <<"\n   (utm)obj.a[1] :" << a[1]
+            <<"\n   (utm)obj.b[0] :" << b[0]
+            <<"\n   (utm)obj.b[1] :" << b[1]
+            <<"\n-u[0] :" << u[0]
+            <<"\n-u[1] :" << u[1]
+            <<"\n-determinantUV :" << determinantUV
+            <<"\n-phi :" << phi
+            <<"\n-thetaD :" << thetaD 
+            <<"\n-diffTheta :" << diffTheta
+            <<"\ndeltaD :" << deltaD
+            <<"\n------------------------------------" << std::endl;
   return deltaD;
 }
 
@@ -77,10 +125,10 @@ void  Regulateur::setRegulateurInput(const regulateur::reg& param)
                                                                                                                                                this->obj.a[1],
                                                                                                                                                this->obj.b[0],
                                                                                                                                                this->obj.b[1]);
-                                                                                                                                              
+                                                                                                                                                                                                                                                                                             
 }
 
-position Regulateur::getPosition()
+struct position Regulateur::getPosition()
 {
   return this->pos;
 }
@@ -90,7 +138,7 @@ float Regulateur::getCap()
   return this->cap;
 }
 
-objectif Regulateur::getObjectif()
+struct objectif Regulateur::getObjectif()
 {
   return this->obj;
 }
@@ -106,12 +154,37 @@ void Regulateur::getGPSPosition(const sensor_msgs::NavSatFix::ConstPtr& gpsData)
   this->posGPS.y = gpsData->longitude;
 }
 
+struct debugReg Regulateur::getRegParam()
+{
+  struct debugReg tmp;
+  tmp.gpspos0 = this->posGPS.x;
+  tmp.gpspos1 = this->posGPS.y;
+  tmp.pos0 = this->pos.x;
+  tmp.pos1 = this->pos.y;
+  tmp.cap = this->cap;
+  tmp.obja0 = this-> obj.a[0];
+  tmp.obja1 = this->obj.a[1];
+  tmp.objb0 = this->obj.b[0];
+  tmp.objb1 = this->obj.b[1];
+  tmp.deltaMax = this->deltaMax;
+  tmp.u0 = this->u[0];
+  tmp.u1 = this->u[1];
+  tmp.v0 = this->v[0];
+  tmp.v1 = this->v[1];
+  tmp.detUV = this->detUV;
+  tmp.phi = this->phi;
+  tmp.thetaD = this->thetaDes;
+  tmp.diffTheta = this->diffTheta;
+  tmp.deltaD = this->deltaDes;
+
+  return tmp;
+}
 void Regulateur::debug()
 {
   FILE * fp;
 
-   fp = fopen ("/home/ubuntu/debug.txt", "w");
-   fprintf(fp, "%10.10f,%10.10f,%10.10f,%10.10f,%10.10f,%10.10f,%10.10f,%10.10f,%10.10f,%10.10f,%10.10f\n",
+   fp = fopen ("/home/ubuntu/debug.txt", "a");
+   fprintf(fp, "%d,%10.10f,%10.10f,%10.10f,%10.10f,%10.10f,%10.10f,%10.10f,%10.10f,%10.10f,%10.10f,%10.10f\n", this->index,
                                                                                                                this->posGPS.x,
                                                                                                                this->posGPS.y,
                                                                                                                this->pos.x,
@@ -124,6 +197,6 @@ void Regulateur::debug()
                                                                                                                this->thetaDes,
                                                                                                                this->deltaDes);
  
-   
+   this->index++;
    fclose(fp);
 }

@@ -36,8 +36,6 @@ class Mission
 		std::string cheminObjectif;		//chemin du fichier objectif
 		
 
-
-
 	public:
 		int nbresObjectifs;				//nbres d'objectif  à atteindre
 		int objectifActuel;				//numero de l'objectif actuel
