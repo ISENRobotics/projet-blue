@@ -1,0 +1,20 @@
+#msg pour le debug du regulateur
+float64 gpspos0
+float64 gpspos1
+float64 pos0
+float64 pos1
+float64 cap
+float64 obja0
+float64 obja1
+float64 objb0
+float64 objb1 
+float64 deltaMax
+float64 u0
+float64 u1
+float64 v0
+float64 v1
+float64 detUV
+float64 phi
+float64 thetaD
+float64 diffTheta
+float64 deltaD

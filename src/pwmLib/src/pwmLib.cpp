@@ -35,13 +35,15 @@ Servo::Servo(std::string t_type)
 		zero = MOT_PWM_ZERO;
 
 		chip = getChipEhr();
-		path ="/sys/class/" + chip + "/pwm1/duty_cycle";
+		path ="/sys/class/pwm/" + chip + "/pwm1/duty_cycle";
 	}
 
 	else if (type =="selecteur")
 	{
 		dutyMax = SEL_PWM_MAX;
 		dutyMin = SEL_PWM_MIN;
+		k = SEL_K;
+		zero = SEL_PWM_ZERO;
 		chip = getChipEcap();
 		path ="/sys/class/pwm/" + chip + "/pwm0/duty_cycle";
 	}
@@ -65,11 +67,12 @@ void Servo::setDuty(int tmp)
 	}	
 	else
 	{
-		std::cout << "(methode setDuty)["<< type <<"] impossible d ecrire le duty" << std::endl;
+		std::cerr << "(methode setDuty)["<< type <<"] impossible d ecrire le duty" << std::endl;
+		std::cerr <<"path : " << path.c_str() << std::endl;
 	}
 }
 
-//ACCESSEUR DU TYPE///////////////////////////////////////////////////////////////////
+//recupere le type
 std::string Servo::getType()
 {
 	return type;
@@ -88,7 +91,7 @@ std::string Servo::getChipEhr()
 	}
 	else
 	{
-		std::cout << "impossible d ouvrir le fichier"<< std::endl;
+		std::cerr << "impossible d ouvrir le fichier"<< std::endl;
 	}
 
 	return tmpChip;
@@ -107,7 +110,7 @@ std::string Servo::getChipEcap()
 	}
 	else
 	{
-		std::cout << "impossible d ouvrir le fichier" << std::endl;
+		std::cerr << "impossible d ouvrir le fichier" << std::endl;
 	}
 
 	return tmpChip;
@@ -115,12 +118,12 @@ std::string Servo::getChipEcap()
 
 
 //COMMANDE PWM /////////////////////////////////////////////////////////////
-void Servo::commande(const std_msgs::Float64& msg)
+void Servo::commande(const std_msgs::Float64::ConstPtr& msg)
 {
 
 
-	float input = msg.data;
-	float commandeNs = zero + input* k;
+	float input = msg->data;
+	float commandeNs = zero + input * k;
 
 	if(type== "direction" || "moteur" || "selecteur")
 	{
@@ -140,10 +143,6 @@ void Servo::commande(const std_msgs::Float64& msg)
 		}
 	}
 
-
-
-
-
 	else
 	{
 		std::cout << "(Servo::commande) : erreur de type !" << std::endl;
@@ -151,9 +150,9 @@ void Servo::commande(const std_msgs::Float64& msg)
 }
 
 
-void Servo::debug(const std_msgs::Float64& msg)
+void Servo::debug(const std_msgs::Float64::ConstPtr& msg)
 {
-	float input = msg.data;
+	float input = msg->data;
 	float commandeNs = zero + input* k;
 	std::cout << "\n###debug() ---------------"
 			  << "\n. type =" << type

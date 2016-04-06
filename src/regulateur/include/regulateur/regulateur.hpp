@@ -1,40 +1,80 @@
 #include <iostream>
 #include <string>
-#include <ros/ros.h>
+#include "ros/ros.h"
 #include <math.h>
-#include <gps_common/GPSFix.h>
+#include <fstream>
 #include <std_msgs/Float64.h>
-#include <imu/YPR.h>
+#include <sensor_msgs/NavSatFix.h>
+#include <regulateur/reg.h>
+#include <regulateur/debugreg.h>
+
+#define COULOIR 2
 
 
-#define COULOIR 5
+struct debugReg
+{
+	float gpspos0;
+	float gpspos1;
+	float pos0;
+	float pos1;
+	float cap;
+	float obja0;
+	float obja1;
+	float objb0;
+	float objb1 ;
+	float deltaMax;
+	float u0;
+	float u1;
+	float v0;
+	float v1;
+	float detUV;
+	float phi;
+	float thetaD;
+	float diffTheta;
+	float deltaD;
+};
 
+struct position
+{
+	float x;
+	float y;
+};
+
+
+struct objectif
+{
+	float a[2];
+	float b[2];
+};
 
 class Regulateur
 {
 	private:
-		float position[2];
-		float vInst[2];
-		float theta;
+		position pos;
+		position posGPS;
+		float cap;
+		objectif obj;
 		float deltaMax;
-		float u[2], v[2];
-		float determinantUV;		//Determinant de la matrice [u v]
+		float thetaDes;
+		float deltaDes;
+		int index;
+		float u[2],v[2];
+		float detUV;
 		float phi;
-		float thetaD;
 		float diffTheta;
-		float deltaD;
-
-
 
 
 	public:
-		Regulateur();
-		float process(float a[2], float b[2]);
-		void setPosition(const gps_common::GPSFix& pos);
-		void setTheta(const imu::YPR& data);
-		void setObjectifs();
-		void debug();
-		~Regulateur();
-
+	//Fonction de callback ros
+	Regulateur();
+	void setRegulateurInput(const regulateur::reg& param);
+	struct position getPosition();
+	float getCap();
+	struct objectif getObjectif();
+	struct debugReg getRegParam();
+	float getDeltaMax();
+	float regul(position pos,float cap,objectif obj,float deltaMax);
+	void debug();
+	void getGPSPosition(const sensor_msgs::NavSatFix::ConstPtr& gpsData);
 
 };
